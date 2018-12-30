@@ -1,0 +1,82 @@
+def inventory_sa_status(info):
+    for line in info:
+        
+        line_str = ""
+
+        for i in line:
+            line_str += str(i) + " "
+
+        if ('ISAKMP SA established' not in line_str) or ('newest ISAKMP' not in line_str):
+            continue
+
+        tunnelname = line[2]
+
+        if ('[' in tunnelname) and (']' in tunnelname):         
+            for num, char in enumerate(tunnelname):
+                if char == "[":
+                    pos1 = num
+                if char == "]":
+                    pos2 = num          
+
+            delete_str = ""
+
+            while pos1 <= pos2:
+                delete_str = delete_str + tunnelname[pos1]
+                pos1 = pos1 + 1
+ 
+            tunnelname = tunnelname.replace(delete_str, "")
+
+        tunnelname = tunnelname[7:-3]
+        amountsa = 0
+
+        for line2 in info:
+            line2_str = ""
+
+            for ii in line2:
+                line2_str += str(ii) + " "
+
+            if (tunnelname in line2_str) and ('IPsec SA established' in line2_str) and ('newest IPSEC' in line2_str):     
+                amountsa += 1
+                
+        sa_thresholds = (amountsa, amountsa - 1, amountsa - 1)
+
+        yield tunnelname, sa_thresholds
+
+# the check function (dummy)
+def check_sa_status(item, params, info):
+
+    allsa, warn, crit = params
+
+    amountsa = 0
+   
+    for line in info:
+        if len(line) < 3:
+            continue
+        if item not in line[2]:
+            continue
+
+        line_str = ""
+ 
+        for i in line:
+            line_str += str(i) + " "
+
+        if ('IPsec SA established' in line_str) and ('newest IPSEC' in line_str):
+            amountsa += 1
+
+    if amountsa <= crit:
+        return 2, str(amountsa) + "/" + str(all) + " SA(s) are up"
+    elif amountsa <= warn:
+        return 1, str(amountsa) + "/" + str(all) + " SA(s) are up"
+    elif amountsa > all:
+        return 1, str(amountsa) + "/" + str(all) + " SA(s) are up. Count higher than expected."
+    else:
+        return 0, str(all) + " SA(s) are up"
+
+    return 1, "Unknown Error"
+
+# declare the check to Check_MK
+check_info["strongswan_ipsec_status"] = {
+    'check_function':            check_sa_status,
+    'inventory_function':        inventory_sa_status,
+    'service_description':       'strongSwan IPsec Status %s',
+}
