@@ -70,13 +70,13 @@ def check_sa_status(item, params, info):
             amountsa += 1
 
     if amountsa <= crit:
-        return 2, str(amountsa) + "/" + str(all) + " SA(s) are up"
+        return 2, str(amountsa) + "/" + str(allsa) + " SA(s) are up"
     elif amountsa <= warn:
-        return 1, str(amountsa) + "/" + str(all) + " SA(s) are up"
+        return 1, str(amountsa) + "/" + str(allsa) + " SA(s) are up"
     elif amountsa > all:
-        return 1, str(amountsa) + "/" + str(all) + " SA(s) are up. Count higher than expected."
+        return 1, str(amountsa) + "/" + str(allsa) + " SA(s) are up. Count higher than expected."
     else:
-        return 0, str(all) + " SA(s) are up"
+        return 0, str(allsa) + " SA(s) are up"
 
     return 1, "Unknown Error"
 
