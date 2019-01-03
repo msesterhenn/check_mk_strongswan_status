@@ -44,6 +44,9 @@ def inventory_sa_status(info):
             if (tunnelname in line2_str) and ('IPsec SA established' in line2_str) and ('newest IPSEC' in line2_str):     
                 amountsa += 1
                 
+        if amountsa == 0:
+            continue
+                
         sa_thresholds = (amountsa, amountsa - 1, amountsa - 1)
 
         yield tunnelname, sa_thresholds
