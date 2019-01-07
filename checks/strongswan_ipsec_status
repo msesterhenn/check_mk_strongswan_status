@@ -31,8 +31,21 @@ def inventory_sa_status(info):
                 pos1 = pos1 + 1
  
             tunnelname = tunnelname.replace(delete_str, "")
+            
+        tunnelarray = tunnelname.split('_')
 
-        tunnelname = tunnelname[7:-3]
+        startpos = 0
+        
+        if "S_REF_" in tunnelname:
+            startpos = 2
+            
+        tunnelname = ""
+        
+        for i in range(startpos, len(tunnelarray)-1):
+            tunnelname += tunnelarray[i] + "_"
+            
+        tunnelname = tunnelname[:-1]
+                
         amountsa = 0
 
         for line2 in info:
